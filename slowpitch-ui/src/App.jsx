@@ -113,6 +113,13 @@ function App() {
           <button onClick={handleUpload} disabled={loading}>
             {loading ? "Analyzing..." : "Analyze CSV"}
           </button>
+
+
+          <a href="/sample-data.csv" download="sample.csv">
+            <button style={{ marginLeft: 10 }}>
+              Download Sample CSV
+            </button>
+          </a>
         </div>
 
         {file && <p className="file-name">Selected: {file.name}</p>}

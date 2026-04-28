@@ -28,9 +28,11 @@ def load_clean_csv(raw: pd.DataFrame, league: str) -> pd.DataFrame:
     df["player_key"] = df["PLAYER"].apply(normalize_name)
 
     stat_cols = ["PA", "AB", "1B", "2B", "3B", "HR", "RBI", "R", "BB", "ROE"]
-
     for col in stat_cols:
-        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+        if col not in df.columns:
+            df[col] = 0
+
+    df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
 
     df["OUT"] = df["AB"] - (df["1B"] + df["2B"] + df["3B"] + df["HR"])
     df["league"] = league

@@ -27,8 +27,7 @@ def load_gamechanger_csv(path: str, league: str) -> pd.DataFrame:
         "RBI": data.iloc[:, 15],
         "R": data.iloc[:, 16],
         "BB": data.iloc[:, 17],
-        "ROE": data.iloc[:, 23],
-    })
+         })
 
     df["PLAYER"] = df["FIRST"].astype(str).str.strip() + " " + df["LAST"].astype(str).str.strip()
     df["player_key"] = df["PLAYER"].apply(normalize_name)
@@ -38,6 +37,7 @@ def load_gamechanger_csv(path: str, league: str) -> pd.DataFrame:
     for col in stat_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
 
+    df["ROE"] = 0
     df["OUT"] = df["AB"] - (df["1B"] + df["2B"] + df["3B"] + df["HR"])
     df["league"] = league
 

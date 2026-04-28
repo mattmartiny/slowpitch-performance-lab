@@ -63,11 +63,10 @@ function App() {
     formData.append("league_code", "UPL");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/analyze", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/analyze`, {
         method: "POST",
         body: formData,
       });
-
       if (!res.ok) {
         throw new Error("Analysis failed. Check your CSV format or backend logs.");
       }

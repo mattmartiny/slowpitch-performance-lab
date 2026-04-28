@@ -4,6 +4,8 @@ from archetypes import add_archetypes
 from team_optimizer import recommend_batting_order
 from report import generate_team_report
 from pretty_print import print_top_players, print_batting_order
+from charts import plot_value_vs_hit_rate
+
 
 print("\n Slowpitch Performance Lab\n")
 
@@ -29,7 +31,7 @@ def print_team_report(df, league_name):
 
     print("\n TEAM ANALYSIS")
     print(report)
-
+    plot_value_vs_hit_rate(leaderboard, league_name)
 
 def main():
     monday = load_gamechanger_csv("data/raw/monday.csv", league="MON")
@@ -37,7 +39,7 @@ def main():
 
     print_team_report(monday, "MONDAY")
     print_team_report(friday, "FRIDAY")
-
+    
 
 if __name__ == "__main__":
     main()

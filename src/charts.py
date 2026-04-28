@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 
 
 def plot_value_vs_hit_rate(df, league_name):
+    df = df[(df["PLAYER"].notna()) & (df["PA"] > 0)]
     plt.figure()
 
     plt.scatter(df["hit_rate"], df["value_per_pa"])

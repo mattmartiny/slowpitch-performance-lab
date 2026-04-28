@@ -13,7 +13,7 @@ print("\n Slowpitch Performance Lab\n")
 def prepare_team(df):
     df = add_player_metrics(df)
     df = add_archetypes(df)
-    return df.sort_values("offensive_value", ascending=False)
+    return df.sort_values("value_per_pa", ascending=False)
 
 
 def print_team_report(df, league_name):

@@ -82,6 +82,23 @@ This project mirrors real baseball analytics workflows:
 
 ---
 
+## Live Demo
+https://slowpitchlab.mattmartiny.com
+
+## Features
+- Upload GameChanger CSV
+- Player efficiency modeling
+- Archetype classification
+- Optimized batting order
+- Player comparison tool
+
+## Tech Stack
+- React (Vite)
+- FastAPI (Python)
+- Pandas (data processing)
+- Render (backend hosting)
+- Plesk (frontend hosting)
+
 ## Author
 
 Matt Martiny  

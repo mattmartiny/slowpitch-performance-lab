@@ -68,7 +68,8 @@ function App() {
         body: formData,
       });
       if (!res.ok) {
-        throw new Error("Analysis failed. Check your CSV format or backend logs.");
+        const text = await res.text();
+        throw new Error(text || "Analysis failed");
       }
 
       const data = await res.json();
@@ -104,6 +105,14 @@ function App() {
           <p>Select a GameChanger batting export to run the model.</p>
         </div>
 
+
+        {!result && !loading && (
+          <p className="muted">
+            Upload a CSV or download the sample file to get started.
+          </p>
+        )}
+
+
         <div className="upload-row">
           <input
             type="file"
@@ -111,7 +120,7 @@ function App() {
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
           <button onClick={handleUpload} disabled={loading}>
-            {loading ? "Analyzing..." : "Analyze CSV"}
+            {loading ? "Waking analytics engine (up to 60s)..." : "Analyze CSV"}
           </button>
 
 

@@ -1,5 +1,16 @@
 import { useState } from "react";
 import "./App.css";
+import {
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  ReferenceLine,
+  LabelList,
+} from "recharts";
 
 function formatNumber(value, digits = 2) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
@@ -32,6 +43,99 @@ function PlayerComparisonCard({ player }) {
         <div>
           <span>Out Rate</span>
           <strong>{formatNumber(player.out_rate)}</strong>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PerformanceTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null;
+
+  const p = payload[0].payload;
+
+  return (
+    <div className="chart-tooltip">
+      <strong>{p.PLAYER}</strong>
+      <div>Archetype: {p.archetype}</div>
+      <div>OV/PA: {formatNumber(p.value_per_pa)}</div>
+      <div>Hit Rate: {formatNumber(p.hit_rate)}</div>
+      <div>XBH Rate: {formatNumber(p.xbh_rate)}</div>
+      <div>Out Rate: {formatNumber(p.out_rate)}</div>
+    </div>
+  );
+}
+
+function PerformanceChart({ data, onPlayerClick }) {
+  const avgHit =
+    data.reduce((sum, p) => sum + Number(p.hit_rate || 0), 0) / data.length;
+
+  const avgValue =
+    data.reduce((sum, p) => sum + Number(p.value_per_pa || 0), 0) / data.length;
+
+  const chartData = data.filter(
+    (p) => p.PLAYER && p.hit_rate !== null && p.value_per_pa !== null
+  );
+
+  return (
+    <div className="chart-shell">
+      <div className="chart-note">
+        Right = better contact. Up = more offensive value. Dotted lines show team averages.
+      </div>
+
+      <div className="chart-wrap">
+        <ResponsiveContainer width="100%" height={420}>
+          <ScatterChart margin={{ top: 24, right: 32, bottom: 24, left: 12 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+
+            <XAxis
+              type="number"
+              dataKey="hit_rate"
+              name="Hit Rate"
+              tickFormatter={(v) => v.toFixed(2)}
+              domain={["dataMin - 0.03", "dataMax + 0.03"]}
+            />
+
+            <YAxis
+              type="number"
+              dataKey="value_per_pa"
+              name="OV/PA"
+              tickFormatter={(v) => v.toFixed(2)}
+              domain={["dataMin - 0.10", "dataMax + 0.10"]}
+            />
+
+            <ReferenceLine x={avgHit} strokeDasharray="5 5" />
+            <ReferenceLine y={avgValue} strokeDasharray="5 5" />
+
+            <Tooltip content={<PerformanceTooltip />} />
+
+            <Scatter
+              data={chartData}
+              fill="#18395f"
+              onClick={(point) => onPlayerClick?.(point.PLAYER)}
+            >
+              <LabelList
+                dataKey="PLAYER"
+                position="top"
+                className="chart-label"
+              />
+            </Scatter>
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="quadrant-grid">
+        <div>
+          <strong>Top Right:</strong> Best overall profiles
+        </div>
+        <div>
+          <strong>Top Left:</strong> Productive but less contact-driven
+        </div>
+        <div>
+          <strong>Bottom Right:</strong> Contact without enough value
+        </div>
+        <div>
+          <strong>Bottom Left:</strong> Lower efficiency group
         </div>
       </div>
     </div>
@@ -191,6 +295,36 @@ function App() {
             </div>
           </section>
 
+
+
+          <p className="muted">
+            Based on 1000 simulated 7-inning games using player outcome probabilities.
+          </p>
+          {result.simulation_results && (
+            <section className="card">
+              <h3>Run Projection</h3>
+              <p>Average Runs: {formatNumber(result.simulation_results.avg_runs, 1)}</p>
+              <p>
+                Range: {result.simulation_results.min_runs} - {result.simulation_results.max_runs}
+              </p>
+              <p>Median: {result.simulation_results.median_runs}</p>
+            </section>
+          )}
+
+
+          <section className="card">
+            <h3>Player Performance Map</h3>
+            <PerformanceChart
+              data={result.leaderboard}
+              onPlayerClick={(name) => {
+                if (!playerA) {
+                  setPlayerA(name);
+                } else {
+                  setPlayerB(name);
+                }
+              }}
+            />
+          </section>
           <section className="card">
             <h3>Team Analysis</h3>
             <pre className="report">{result.report}</pre>

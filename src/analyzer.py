@@ -1,11 +1,11 @@
 import math
-import pandas as pd
-
 from src.load_gamechanger import load_gamechanger_csv
 from src.metrics import add_player_metrics
 from src.archetypes import add_archetypes
 from src.team_optimizer import recommend_batting_order
 from src.report import generate_team_report
+from src.simulator import simulate_many
+
 
 def clean_for_json(value):
     if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
@@ -23,14 +23,32 @@ def clean_for_json(value):
 def prepare_team(df):
     df = add_player_metrics(df)
     df = add_archetypes(df)
+
+    df = df[
+        df["PLAYER"].notna()
+        & (df["PLAYER"].astype(str).str.lower() != "nan")
+        & (df["PA"] > 0)
+    ]
+
     return df.sort_values("offensive_value", ascending=False)
 
 
 def analyze_team(csv_path: str, league_name: str, league_code: str):
     raw = load_gamechanger_csv(csv_path, league=league_code)
     leaderboard = prepare_team(raw)
+
     batting_order = recommend_batting_order(leaderboard, lineup_size=12)
     report = generate_team_report(leaderboard, batting_order)
+
+    lineup_keys = batting_order["player_key"].tolist()
+
+    simulation_lineup = (
+        leaderboard[leaderboard["player_key"].isin(lineup_keys)]
+        .set_index("player_key")
+        .loc[lineup_keys]
+        .reset_index()
+        .to_dict(orient="records")
+    )
 
     result = {
         "league": league_name,
@@ -50,12 +68,7 @@ def analyze_team(csv_path: str, league_name: str, league_code: str):
         ].to_dict(orient="records"),
         "batting_order": batting_order.to_dict(orient="records"),
         "report": report,
+        "simulation_results": simulate_many(simulation_lineup),
     }
-
-    leaderboard = leaderboard[
-    leaderboard["PLAYER"].notna() &
-    (leaderboard["PLAYER"].astype(str).str.lower() != "nan") &
-    (leaderboard["PA"] > 0)
-]
 
     return clean_for_json(result)

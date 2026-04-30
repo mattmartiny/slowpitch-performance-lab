@@ -26,8 +26,16 @@ def health_check():
     return {"status": "ok"}
 
 @app.post("/simulate")
-async def simulate_custom(lineup: list = Body(...)):
-    return simulate_many(lineup)
+async def simulate_custom(payload: dict = Body(...)):
+    lineup = payload.get("lineup", [])
+    leaderboard = payload.get("leaderboard", [])
+
+    # Build full stat lineup from leaderboard
+    lookup = {p["PLAYER"]: p for p in leaderboard}
+
+    simulation_lineup = [lookup[p["PLAYER"]] for p in lineup if p["PLAYER"] in lookup]
+
+    return simulate_many(simulation_lineup)
 
 @app.post("/analyze")
 async def analyze_csv(

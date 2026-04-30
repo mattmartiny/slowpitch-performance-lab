@@ -206,35 +206,38 @@ function App() {
   };
 
   const recalculateRuns = async () => {
-  setLoading(true);
-  setError("");
+    setLoading(true);
+    setError("");
 
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/simulate`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(editableLineup), // ✅ fixed
-    });
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/simulate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          lineup: editableLineup,
+          leaderboard: result.leaderboard
+        })
+      });
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || "Simulation failed");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Simulation failed");
+      }
+
+      const data = await res.json();
+
+      setResult((prev) => ({
+        ...prev,
+        simulation_results: data,
+      }));
+    } catch (err) {
+      setError(err.message || "Simulation failed");
+    } finally {
+      setLoading(false);
     }
-
-    const data = await res.json();
-
-    setResult((prev) => ({
-      ...prev,
-      simulation_results: data,
-    }));
-  } catch (err) {
-    setError(err.message || "Simulation failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const topPlayers = result?.leaderboard?.slice(0, 12) ?? [];
   const allPlayers = result?.leaderboard ?? [];

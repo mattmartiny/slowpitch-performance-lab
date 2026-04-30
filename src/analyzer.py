@@ -40,16 +40,15 @@ def analyze_team(csv_path: str, league_name: str, league_code: str):
     batting_order = recommend_batting_order(leaderboard, lineup_size=12)
     report = generate_team_report(leaderboard, batting_order)
 
-    lineup_keys = batting_order["player_key"].tolist()
+    lineup_names = batting_order["PLAYER"].tolist()
 
     simulation_lineup = (
-        leaderboard[leaderboard["player_key"].isin(lineup_keys)]
-        .set_index("player_key")
-        .loc[lineup_keys]
+        leaderboard[leaderboard["PLAYER"].isin(lineup_names)]
+        .set_index("PLAYER")
+        .loc[lineup_names]
         .reset_index()
         .to_dict(orient="records")
     )
-
     result = {
         "league": league_name,
         "leaderboard": leaderboard[

@@ -51,20 +51,27 @@ def analyze_team(csv_path: str, league_name: str, league_code: str):
     )
     result = {
         "league": league_name,
-        "leaderboard": leaderboard[
-            [
-                "PLAYER",
-                "PA",
-                "offensive_value",
-                "value_per_pa",
-                "hit_rate",
-                "out_rate",
-                "xbh_rate",
-                "hr_rate",
-                "run_production_per_pa",
-                "archetype",
-            ]
-        ].to_dict(orient="records"),
+    "leaderboard": leaderboard[
+        [
+            "PLAYER",
+            "PA",
+            "AB",
+            "1B",
+            "2B",
+            "3B",
+            "HR",
+            "BB",
+            "OUT",
+            "offensive_value",
+            "value_per_pa",
+            "hit_rate",
+            "out_rate",
+            "xbh_rate",
+            "hr_rate",
+            "run_production_per_pa",
+            "archetype",
+        ]
+    ].to_dict(orient="records"),
         "batting_order": batting_order.to_dict(orient="records"),
         "report": report,
         "simulation_results": simulate_many(simulation_lineup),

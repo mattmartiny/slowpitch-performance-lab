@@ -151,6 +151,12 @@ function App() {
   const [playerB, setPlayerB] = useState("");
   const [editableLineup, setEditableLineup] = useState([]);
 
+  useEffect(() => {
+    if (result?.batting_order) {
+      setEditableLineup(result.batting_order);
+    }
+  }, [result?.batting_order]);
+
   const handleUpload = async () => {
     if (!file) {
       setError("Please choose a CSV file first.");
@@ -183,14 +189,6 @@ function App() {
     } finally {
       setLoading(false);
     }
-
-    useEffect(() => {
-      if (result?.batting_order) {
-        setEditableLineup(result.batting_order);
-      }
-    }, [result]);
-
-
   };
 
   const movePlayer = (index, direction) => {
@@ -209,6 +207,7 @@ function App() {
 
   const recalculateRuns = async () => {
   setLoading(true);
+  setError("");
 
   try {
     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/simulate`, {
@@ -216,10 +215,13 @@ function App() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        lineup: editableLineup,
-      }),
+      body: JSON.stringify(editableLineup), // ✅ fixed
     });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Simulation failed");
+    }
 
     const data = await res.json();
 
@@ -228,7 +230,7 @@ function App() {
       simulation_results: data,
     }));
   } catch (err) {
-    setError("Simulation failed");
+    setError(err.message || "Simulation failed");
   } finally {
     setLoading(false);
   }

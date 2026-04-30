@@ -149,7 +149,7 @@ function App() {
   const [error, setError] = useState("");
   const [playerA, setPlayerA] = useState("");
   const [playerB, setPlayerB] = useState("");
-
+  const [editableLineup, setEditableLineup] = useState([]);
 
   const handleUpload = async () => {
     if (!file) {
@@ -183,7 +183,56 @@ function App() {
     } finally {
       setLoading(false);
     }
+
+    useEffect(() => {
+      if (result?.batting_order) {
+        setEditableLineup(result.batting_order);
+      }
+    }, [result]);
+
+
   };
+
+  const movePlayer = (index, direction) => {
+    const newLineup = [...editableLineup];
+    const newIndex = index + direction;
+
+    if (newIndex < 0 || newIndex >= newLineup.length) return;
+
+    [newLineup[index], newLineup[newIndex]] = [
+      newLineup[newIndex],
+      newLineup[index],
+    ];
+
+    setEditableLineup(newLineup);
+  };
+
+  const recalculateRuns = async () => {
+  setLoading(true);
+
+  try {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/simulate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        lineup: editableLineup,
+      }),
+    });
+
+    const data = await res.json();
+
+    setResult((prev) => ({
+      ...prev,
+      simulation_results: data,
+    }));
+  } catch (err) {
+    setError("Simulation failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const topPlayers = result?.leaderboard?.slice(0, 12) ?? [];
   const allPlayers = result?.leaderboard ?? [];
@@ -277,21 +326,29 @@ function App() {
               </div>
             </div>
 
-            <div className="card">
-              <h3>Recommended Batting Order</h3>
-              <div className="lineup">
-                {result.batting_order.map((p) => (
-                  <div className="lineup-row" key={`${p.batting_order}-${p.PLAYER}`}>
-                    <div className="order-number">{p.batting_order}</div>
-                    <div>
-                      <div className="player-name">{p.PLAYER}</div>
-                      <div className="muted">
-                        {p.batting_role} · OV/PA {formatNumber(p.value_per_pa)}
-                      </div>
+            <div className="lineup">
+              {editableLineup.map((p, i) => (
+                <div className="lineup-row" key={p.PLAYER}>
+                  <div className="order-number">{i + 1}</div>
+
+                  <div>
+                    <div className="player-name">{p.PLAYER}</div>
+                    <div className="muted">
+                      {p.batting_role} · OV/PA {formatNumber(p.value_per_pa)}
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <div className="lineup-controls">
+                    <button onClick={() => movePlayer(i, -1)}>↑</button>
+                    <button onClick={() => movePlayer(i, 1)}>↓</button>
+                  </div>
+                </div>
+              ))}
+
+
+              <button onClick={recalculateRuns}>
+                Recalculate Runs
+              </button>
             </div>
           </section>
 

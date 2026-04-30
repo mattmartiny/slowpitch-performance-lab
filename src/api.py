@@ -2,6 +2,8 @@ import os
 import tempfile
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Body
+from src.simulator import simulate_many
 
 from src.analyzer import analyze_team
 
@@ -23,6 +25,9 @@ app.add_middleware(
 def health_check():
     return {"status": "ok"}
 
+@app.post("/simulate")
+async def simulate_custom(lineup: list = Body(...)):
+    return simulate_many(lineup)
 
 @app.post("/analyze")
 async def analyze_csv(

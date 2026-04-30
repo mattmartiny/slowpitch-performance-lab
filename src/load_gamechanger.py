@@ -24,6 +24,16 @@ def load_clean_csv(raw: pd.DataFrame, league: str) -> pd.DataFrame:
     if "ROE" not in df.columns:
         df["ROE"] = 0
 
+
+    if "1B" not in df.columns:
+        df["1B"] = (
+            pd.to_numeric(df["H"], errors="coerce").fillna(0)
+            - pd.to_numeric(df["2B"], errors="coerce").fillna(0)
+            - pd.to_numeric(df["3B"], errors="coerce").fillna(0)
+            - pd.to_numeric(df["HR"], errors="coerce").fillna(0)
+        )
+
+
     df["PLAYER"] = df["FIRST"].astype(str).str.strip() + " " + df["LAST"].astype(str).str.strip()
     df["player_key"] = df["PLAYER"].apply(normalize_name)
 
@@ -68,7 +78,10 @@ def load_gamechanger_csv(path: str, league: str) -> pd.DataFrame:
     raw = pd.read_csv(path)
 
     # Clean/simple CSV format
-    if {"Last", "First", "PA", "AB", "1B", "2B", "3B", "HR", "RBI", "R", "BB"}.issubset(raw.columns):
+    base_required = {"Last", "First", "PA", "AB", "2B", "3B", "HR", "RBI", "R", "BB"}
+    has_hit_breakdown = "1B" in raw.columns or "H" in raw.columns
+
+    if base_required.issubset(raw.columns) and has_hit_breakdown:
         return load_clean_csv(raw, league)
 
     # GameChanger multi-header export format

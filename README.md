@@ -1,5 +1,20 @@
 # Slowpitch Performance Lab
 
+## Screenshots
+
+### Upload
+![Upload](assets/screenshot-upload.png)
+
+### Results
+![Results](assets/screenshot-results.png)
+
+### Performance Chart & Team Analaysis
+![Analysis](assets/screenshot-analysis.png)
+
+### Player Comparison
+![Comparison](assets/screenshot-comparison.png)
+
+---
 
 A full-stack softball analytics platform that transforms GameChanger CSV exports into actionable lineup decisions, player evaluations, and run projections.
 

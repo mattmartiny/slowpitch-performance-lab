@@ -1,19 +1,65 @@
 # Slowpitch Performance Lab
 
-![Player Performance](output/monday_scatter.png)
 
-A Python-based baseball analytics engine that transforms GameChanger CSV exports into actionable lineup decisions, player evaluations, and scouting-style team insights.
+A full-stack softball analytics platform that transforms GameChanger CSV exports into actionable lineup decisions, player evaluations, and run projections.
+
+---
+
+## Live Demo
+
+https://slowpitchlab.mattmartiny.com
+
+---
+
+## Features
+
+- Upload GameChanger CSV exports  
+- Player performance scoring (Offensive Value, Value per PA)  
+- Archetype classification (Power, High Floor, Boom/Bust, etc.)  
+- Optimized 12-player batting order generation  
+- Interactive lineup editor (reorder players)  
+- Run projection simulator (Monte Carlo simulation)  
+- Lineup comparison (optimized vs user-adjusted)  
+- Player comparison tool  
+- Visual analytics (performance scatter plot)  
 
 ---
 
 ## Overview
 
+This project combines data engineering, analytics, and simulation modeling to replicate real-world baseball decision-making workflows.
+
+### Data Pipeline
 - Cleans and normalizes multi-header GameChanger exports  
-- Builds a custom Offensive Value (OV) metric (wOBA-inspired)  
-- Evaluates players using rate-based performance metrics  
-- Classifies hitters into archetypes (Power, High Floor, Boom/Bust, etc.)  
-- Generates optimized 12-player batting orders  
-- Produces automated, human-readable team reports  
+- Handles missing data (e.g., derives singles from hits)  
+- Standardizes player identity across datasets  
+
+### Metrics Engine
+- Offensive Value (OV): weighted run contribution metric (wOBA-inspired)  
+- OV/PA: efficiency per plate appearance  
+- Hit Rate / XBH Rate / Out Rate: player profile indicators  
+
+### Player Archetypes
+Classifies hitters into roles such as:
+- Table Setter  
+- Run Producer  
+- Power Hitter  
+- High Floor / Low Efficiency  
+
+### Lineup Optimization
+Builds a 12-player batting order based on:
+- Efficiency  
+- Role fit  
+- Lineup balance  
+
+### Simulation Engine
+- Monte Carlo simulation (1000 games)  
+- Models each plate appearance probabilistically  
+- Tracks base advancement and scoring  
+- Outputs:
+  - Average runs  
+  - Min / max range  
+  - Median runs  
 
 ---
 
@@ -21,16 +67,14 @@ A Python-based baseball analytics engine that transforms GameChanger CSV exports
 
 ### Batting Order
 
-```
-1. Corey Moyer — Table Setter (OV/PA: 1.82)
-2. Matt Martiny — Table Setter (OV/PA: 1.79)
-3. Corbin Pierson — Run Producer (OV/PA: 1.75)
-...
-```
+1. Corey Moyer — Table Setter (OV/PA: 1.82)  
+2. Matt Martiny — Table Setter (OV/PA: 1.79)  
+3. Corbin Pierson — Run Producer (OV/PA: 1.75)  
+
+---
 
 ### Team Analysis
 
-```
 Strengths:
 - Strong contact hitting across lineup
 - High overall offensive efficiency
@@ -40,66 +84,70 @@ Weaknesses:
 
 Key Insight:
 - Matt Martiny is the most efficient hitter and should be placed in a high-impact spot (2–4)
-```
 
 ---
 
-## Core Concepts
+### Run Projection
 
-- **Offensive Value (OV):** weighted run contribution metric  
-- **OV/PA:** efficiency per plate appearance  
-- **Hit Rate / XBH Rate / Out Rate:** player profile indicators  
-- **Archetypes:** percentile-based classification relative to team environment  
+Optimized Lineup: 19.4 runs/game  
+User Lineup: 17.8 runs/game  
+Difference: +1.6 runs/game  
 
 ---
 
 ## Tech Stack
 
-- Python  
+### Frontend
+- React (Vite)  
+- Recharts  
+- Custom CSS  
+
+### Backend
+- FastAPI (Python)  
 - Pandas / NumPy  
-- Matplotlib  
+
+### Deployment
+- Render (backend API)  
+- Plesk (frontend hosting)  
 
 ---
 
-## Running the Project
+## Project Structure
 
-```bash
-pip install -r requirements.txt
-python src/main.py
-```
+src/
+  api.py                # FastAPI endpoints
+  analyzer.py           # Analysis pipeline
+  load_gamechanger.py   # CSV ingestion & normalization
+  metrics.py            # Player metric calculations
+  archetypes.py         # Player classification
+  team_optimizer.py     # Batting order logic
+  simulator.py          # Run simulation engine
+  report.py             # Team insights
+
+---
+
+## Running Locally
+
+pip install -r requirements.txt  
+python src/main.py  
 
 ---
 
 ## Why This Matters
 
-This project mirrors real baseball analytics workflows:
+This project mirrors real analytics workflows:
 
 - Data cleaning and normalization  
 - Metric engineering  
 - Player segmentation  
-- Lineup optimization  
-- Translating data into actionable decisions  
+- Optimization modeling  
+- Simulation-based decision making  
+
+It demonstrates the ability to move from raw data to insights to interactive decision tools.
 
 ---
-
-## Live Demo
-https://slowpitchlab.mattmartiny.com
-
-## Features
-- Upload GameChanger CSV
-- Player efficiency modeling
-- Archetype classification
-- Optimized batting order
-- Player comparison tool
-
-## Tech Stack
-- React (Vite)
-- FastAPI (Python)
-- Pandas (data processing)
-- Render (backend hosting)
-- Plesk (frontend hosting)
 
 ## Author
 
 Matt Martiny  
-Kansas City, MO
+Kansas City, KS

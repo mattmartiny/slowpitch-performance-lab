@@ -16,6 +16,18 @@
 
 ---
 
+## What This Solves
+
+Helps softball teams answer:
+
+- Who should bat where?
+- How much does lineup order matter?
+- Which players actually drive runs?
+- What lineup scores the most runs?
+
+
+---
+
 A full-stack softball analytics platform that transforms GameChanger CSV exports into actionable lineup decisions, player evaluations, and run projections.
 
 ---

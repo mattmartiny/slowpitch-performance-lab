@@ -10,16 +10,16 @@ def add_player_metrics(df: pd.DataFrame) -> pd.DataFrame:
 
 
     df["offensive_value"] = (
-        df["1B"] * 1.0
-        + df["2B"] * 1.5
-        + df["3B"] * 2.5
-        + df["HR"] * 3.0
-        + df["BB"] * 0.5
-        + df["R"] * 1.0
-        + df["RBI"] * 0.75
-        + df["ROE"] * 1.0
-        - df["OUT"] * 0.5
-    )
+    df["1B"] * 1.1
+    + df["2B"] * 1.8
+    + df["3B"] * 2.4
+    + df["HR"] * 3.0
+    + df["BB"] * 0.95
+    + df["ROE"] * 1.0
+    + df["R"] * 0.25
+    + df["RBI"] * 0.25
+    - df["OUT"] * 0.5
+)
 
     df["value_per_pa"] = df.apply(lambda r: safe_div(r["offensive_value"], r["PA"]), axis=1)
 
